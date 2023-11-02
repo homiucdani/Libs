@@ -1,0 +1,192 @@
+Bug Fix 
+
+constraints {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
+            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
+        }
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0") {
+            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
+        }
+    }
+
+
+..........................................................................................................................................
+
+1. Compose Navigation: implementation("androidx.navigation:navigation-compose:2.6.0")
+
+2. New Way to Navigate: 
+plugins {
+    //...
+   id("com.google.devtools.ksp") version "1.9.0-1.0.13" apply false // Depends on your kotlin version
+}
+
+def destination_version = '1.6.15-beta'
+
+implementation("io.github.raamcosta.compose-destinations:core:$destination_version")
+ksp("io.github.raamcosta.compose-destinations:ksp:$destination_version")
+
+
+If you use kotlin version 1.8.0+ dont add these -> else add
+
+// in android block inside module-name -> very important to add cuz if not then the classes when Annotated with @Destination will not be created
+// add both
+applicationVariants.all { variant ->
+        variant.addJavaSourceFoldersToModel(
+                new File(buildDir, "generated/ksp/${variant.name}/kotlin")
+        )
+}
+
+
+applicationVariants.all { variant ->
+        kotlin.sourceSets {
+            getByName(variant.name) {
+                kotlin.srcDir("build/generated/ksp/${variant.name}/kotlin")
+            }
+        }
+}
+
+if not generating the destination classes than remove the last piece of code and put only the variant with java
+
+
+3. Motion Layout for complex animations (very nice to use) its a constraintLayout, we put constraints inside json5 (not same as json)
+
+implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+
+4. ViewModel
+
+implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+
+5. Room Database
+
+    id 'kotlin-kapt' -> put this into plugins in gradle
+
+// use ksp instead of kapt when possible its x2 faster
+        id("com.google.devtools.ksp")
+
+	plugins{
+   	   id("com.google.devtools.ksp") version "1.9.0-1.0.13" apply false
+	}
+   
+    implementation("androidx.room:room-runtime:2.6.0")
+    implementation("androidx.room:room-ktx:2.6.0")
+    ksp("androidx.room:room-compiler:2.6.0")
+    implementation("androidx.room:room-paging:2.6.0") // when paging with room this is a MUST !!!!!!
+
+6. Dagger - Hilt
+
+    //put only this into buildScript into project build-gradle
+    dependencies {
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.48")
+    }
+
+    plugins {
+
+	id("com.google.devtools.ksp")
+    	id("dagger.hilt.android.plugin")
+    }
+
+    implementation("com.google.dagger:hilt-android:2.48")
+    ksp("com.google.dagger:hilt-android-compiler:2.48")
+    ksp("androidx.hilt:hilt-compiler:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+
+7. Retrofit
+
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation "com.squareup.okhttp3:okhttp:5.0.0-alpha.3"
+    implementation "com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.3"
+
+    implementation "com.squareup.retrofit2:converter-moshi:2.9.0"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:1.13.0"
+
+8. Coil (for images)
+
+   implementation("io.coil-kt:coil-compose:2.4.0")
+
+9. More image icons
+
+   implementation "androidx.compose.material:material-icons-extended:1.4.3"
+
+10. OpenCSV
+
+  implementation 'com.opencsv:opencsv:5.5.2'
+
+11. Swipe Refresh
+
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.24.2-alpha"
+
+12. Testing
+
+    implementation "junit:junit:4.13.2"
+    implementation "androidx.test.ext:junit:1.1.5"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1"
+    implementation "com.google.truth:truth:1.1.3"
+    implementation "io.mockk:mockk:1.13.5"
+    implementation "io.mockk:mockk-android:1.13.5"
+    implementation "app.cash.turbine:turbine:0.7.0"
+    implementation "com.squareup.okhttp3:mockwebserver:4.9.3"
+    implementation "androidx.compose.ui:ui-test-junit4:1.4.3"
+    implementation "com.google.dagger:hilt-android-testing:2.44"
+    implementation "androidx.test:runner:1.5.2"
+
+13. WorkManager
+    
+    implementation "androidx.work:work-runtime-ktx:2.8.1"
+
+    // livedata to transform a "livedata" into compose state easily
+    implementation "androidx.compose.runtime:runtime-livedata:1.4.3"
+
+14. Datastore
+	// DataStore Preferences
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+15. Kotlin Serialization
+
+  plugins {
+     id("kotlinx-serialization")
+  }
+
+  build.app -> implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+  build.project -> classpath("org.jetbrains.kotlin:kotlin-serialization:1.9.0")
+
+16. Splash APi
+
+   implementation("androidx.core:core-splashscreen:1.0.1")
+
+17. Runtime Compose
+
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
+
+18. Firebase (some useful libs)
+
+    implementation(platform("com.google.firebase:firebase-bom:32.2.2"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
+
+19. Date Time Picker
+
+    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.2.0")
+    implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.2.0")
+
+20. Desugar JDK (remove api requirements, use some code which has min sdk 26)
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+
+21. Mongo DB Realm
+
+   plugins{
+      id("io.realm.kotlin") version "1.10.2" apply false
+   }
+ 
+    implementation("io.realm.kotlin:library-sync:1.10.2") // device sync
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
+
+22. Paging 3
+    implementation("androidx.paging:paging-compose:3.2.1")
+
+23. Palette APi
+    implementation("androidx.palette:palette-ktx:1.0.0")
+
